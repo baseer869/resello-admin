@@ -191,6 +191,7 @@ td span {
 .menu_icon {
     width: 1rem;
     height: 1rem;
+    cursor: pointer;
 }
 
 .dropmenu {
@@ -221,4 +222,24 @@ td span {
 
 .dropmenu:hover .menu-content {
     display: block;
+}
+
+.select-option {
+    border: 1px solid #6e6e6e;
+    width: 8.1rem;
+    border-radius: .2rem;
+}
+
+.select-trans-status {
+    width: 10rem;
+    height: 2rem;
+    padding: 0 1rem 0 1rem;
+    outline: none;
+    background: none;
+    border: none;
+}
+
+.select-trans-status>option {
+    width: 9rem;
+
 }

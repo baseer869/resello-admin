@@ -12,45 +12,46 @@ import RefundedIcon from "../../assets/icons/refunded.svg";
 import menuIcon from "../../assets/icons/menu.png";
 import cancelIcon from "../../assets/icons/cancel.svg";
 import viewIcon from "../../assets/icons/view.png";
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
-
+// import Dropdown from "react-dropdown";
+// import "react-dropdown/style.css";
 
 function Orders() {
-  const { data, loading, error } = useFetch(
-    "/resello/api/v1/cms/listOrder"
-  );
+  const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
 
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
 
- function setDataHandler(){
-  //true loader 
-  if(data  && data.status == 200){
-    setOrders(data?.data.order);
-    //false
-  } else if(data.status ==202) {
-    setOrders(null);
-  //false
+  function setDataHandler() {
+    if (data && data.status === 200) {
+      setOrders(data?.data.order);
+    } else if (data.status === 202) {
+      setOrders(null);
+    }
   }
-
- }
-
+  const [option, setOption] = useState(null);
+  const bg_style =
+    option === "Completed"
+      ? setColor("completed")
+      : option === "Rejected"
+      ? setColor("rejected")
+      : "completed";
+  const [color, setColor] = useState(bg_style);
+  console.log(option);
 
   useEffect(() => {
     // setPagination(calculateRange(data, 8));
-    setDataHandler()
-  }, [, data]);
+    setDataHandler();
+  }, [data]);
 
   const __handleSearch = (event) => {
     setSearch(event.target.value);
     if (event.target.value !== "") {
-      let search_results = orders.order.filter(
+      let search_results = orders.filter(
         (item) =>
-          item.userId.toLowerCase().includes(search.toLowerCase()) ||
-          item.id.toLowerCase().includes(search.toLowerCase()) ||
+          item.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
+          item.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
           item.orderDate.toLowerCase().includes(search.toLowerCase())
       );
       setOrders(search_results);
@@ -63,13 +64,9 @@ function Orders() {
     setPage(new_page);
     setOrders(sliceData(data, new_page, 5));
   };
-  console.log('order response==>', data);
-  const options = [
-    'one', 
-    'two', 
-    'four'
-  ];
-  const defaultOption = options[0];
+  console.log("order response==>", data);
+  // const options = ["one", "two", "four"];
+  // const defaultOption = options[0];
 
   return (
     <div className="dashboard-content">
@@ -94,7 +91,7 @@ function Orders() {
             <th>ID</th>
             <th>ORDER ID</th>
             <th>ORDER DATE</th>
-            <th>COSTUMER</th>
+            {/* <th>COSTUMER</th> */}
             <th>STATUS</th>
             <th>PAID</th>
             <th>TOTAL AMOUNT</th>
@@ -102,94 +99,127 @@ function Orders() {
           </thead>
 
           {orders?.length !== 0 ? (
-            <tbody>
-              {orders?.map((order, index) => (
-                <tr key={index}>
-                  <td>
-                    <span>{order.id}</span>
-                  </td>
-                  <td>
-                    <span>{order.orderNumber}</span>
-                  </td>
-                  <td>
-                    <span>{order.orderDate}</span>
-                  </td>
-                  <td>
-                    <div>
-                      <img
-                        src={order.image}
-                        className="dashboard-content-avatar"
-                        alt={order.category}
-                      />
-                      <span>
-                        {order.category}
-                        {/* {order.first_name} {order.last_name} */}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      {order.transactionStatus === "Pending" ? (
-                       <Dropdown options={options} onChange={(text)=> console.log('shsskjsksjl',text)} value={order.transactionStatus} placeholder="Select an option" />
-
-                      ) : order.transactionStatus === "Completed" ? (
-                        <Dropdown options={options} onChange={(text)=> console.log('shsskjsksjl',text)} value={order.transactionStatus} placeholder="Select an option" />
-
-                      ) : order.transactionStatus === "Refunded" ? (
+            loading ? (
+              "loading data please wait..."
+            ) : (
+              <tbody>
+                {orders?.map((order, index) => (
+                  <tr key={index}>
+                    <td>
+                      <span>{order.id}</span>
+                    </td>
+                    <td>
+                      <span>{order.orderNumber}</span>
+                    </td>
+                    <td>
+                      <span>{order.orderDate}</span>
+                    </td>
+                    {/* <td>
+                      <div>
                         <img
-                          src={RefundedIcon}
-                          alt="refunded-icon"
-                          className="dashboard-content-icon"
+                          src={order.image}
+                          className="dashboard-content-avatar"
+                          alt={order.category}
                         />
-                      ) : null}
-                      <span>{order.transactionStatus}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span>{order.paid}</span>
-                  </td>
-                  <td>
-                    <span>Rs.{order.orderdetails[0]?.total}</span>
-                  </td>
+                        <span>{order.category}</span>
+                      </div>
+                    </td> */}
+                    <td>
+                      <div className="select-option">
+                        <select
+                          value={option ? null : order.transactionStatus}
+                          onChange={(e) => setOption(e.target.value)}
+                          className={`select-trans-status`}
+                        >
+                          <option>Completed</option>
+                          <option>Pending</option>
+                          <option>Canceled</option>
+                          <option>Rejected</option>
+                        </select>
+                      </div>
 
-                  {/* <td>
+                      {/* <div className="">
+                        {order.transactionStatus === "Pending" ? (
+                          <Dropdown
+                            options={options}
+                            onChange={(text) =>
+                              console.log("shsskjsksjl", text)
+                            }
+                            value={order.transactionStatus}
+                            placeholder="Select an option"
+                            className="option-dropdown"
+                          />
+                        ) : order.transactionStatus === "Completed" ? (
+                          <Dropdown
+                            options={options}
+                            className="drop_down"
+                            onChange={(text) =>
+                              console.log("shsskjsksjl", text)
+                            }
+                            value={order.transactionStatus}
+                            placeholder="Select an option"
+                          />
+                        ) : order.transactionStatus === "Refunded" ? (
+                          <img
+                            src={RefundedIcon}
+                            alt="refunded-icon"
+                            className="dashboard-content-icon"
+                          />
+                        ) : null}
+                        <span>{order.transactionStatus}</span>
+                      </div> */}
+                    </td>
+                    <td>
+                      <span>{order.paid}</span>
+                    </td>
+                    <td>
+                      <span>Rs.{order.orderdetails[0]?.total}</span>
+                    </td>
+
+                    {/* <td>
                     <span>{order.paid}</span>
                   </td> */}
-                  <td>
-                    <span className="dropmenu">
-                      <img
-                        className="menu_icon"
-                        src={menuIcon}
-                        alt="menu icon"
-                      />
-                      <div class="menu-content">
-                        <div className="menu-link">
+                    <td>
+                      <span className="dropmenu">
+                        <a to="#!" className="">
                           <img
                             className="menu_icon"
                             src={viewIcon}
                             alt="menu icon"
                           />
-                          <img
-                            className="menu_icon"
-                            src={cancelIcon}
-                            alt="menu icon"
-                          />
-                          <img
-                            className="menu_icon"
-                            src={DoneIcon}
-                            alt="menu icon"
-                          />
-                        </div>
-                      </div>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          ) : null}
+                        </a>
+
+                        {/* <div class="menu-content">
+                          <div className="menu-link">
+                            <img
+                              className="menu_icon"
+                              src={viewIcon}
+                              alt="menu icon"
+                            />
+                            <img
+                              className="menu_icon"
+                              src={cancelIcon}
+                              alt="menu icon"
+                            />
+                            <img
+                              className="menu_icon"
+                              src={DoneIcon}
+                              alt="menu icon"
+                            />
+                          </div>
+                        </div> */}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )
+          ) : (
+            "Loading Please wait"
+          )}
         </table>
 
-        {orders !== null || orders?.length !== 0  ? (
+        {orders !== null || orders?.length !== 0 ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
