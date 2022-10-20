@@ -9,21 +9,22 @@ import "../styles.css";
 
 function Orders() {
   const { data, loading, error } = useFetch(
-    "https://fakestoreapi.com/products"
+    "/resello/api/v1/cms/listOrder"
   );
   console.log(data);
   const [search, setSearch] = useState("");
-  const [products, setProducts] = useState(data);
+  const [products, setProducts] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
 
   console.log(products);
 
   useEffect(() => {
-    setPagination(calculateRange(data, 8));
-    setProducts(sliceData(data, page, 8));
-  }, [page, data]);
-
+    // setPagination(calculateRange(data, 8));
+    setProducts(data?.data?.order);
+  }, [ data]);
+  console.log('data',data);
+  
   const __handleSearch = (event) => {
     setSearch(event.target.value);
     if (event.target.value !== "") {
@@ -72,9 +73,9 @@ function Orders() {
             <th>Action</th>
           </thead>
 
-          {products.length !== 0 ? (
+          {products?.length !== 0 ? (
             <tbody>
-              {products.map((product, index) => (
+              {products?.map((product, index) => (
                 <tr key={index}>
                   <td>
                     <span>{product.id}</span>
@@ -107,7 +108,7 @@ function Orders() {
           ) : null}
         </table>
 
-        {products.length !== 0 ? (
+        {/* {products?.length !== 0 ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
@@ -123,7 +124,7 @@ function Orders() {
           <div className="dashboard-content-footer">
             <span className="empty-table">No data</span>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

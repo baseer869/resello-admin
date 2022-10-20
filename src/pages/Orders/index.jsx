@@ -12,19 +12,37 @@ import RefundedIcon from "../../assets/icons/refunded.svg";
 import menuIcon from "../../assets/icons/menu.png";
 import cancelIcon from "../../assets/icons/cancel.svg";
 import viewIcon from "../../assets/icons/view.png";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+
 
 function Orders() {
-  const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
+  const { data, loading, error } = useFetch(
+    "/resello/api/v1/cms/listOrder"
+  );
 
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState(data);
+  const [orders, setOrders] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
 
+ function setDataHandler(){
+  //true loader 
+  if(data  && data.status == 200){
+    setOrders(data?.data.order);
+    //false
+  } else if(data.status ==202) {
+    setOrders(null);
+  //false
+  }
+
+ }
+
+
   useEffect(() => {
-    setPagination(calculateRange(data, 8));
-    setOrders(sliceData(data, page, 8));
-  }, [page, data]);
+    // setPagination(calculateRange(data, 8));
+    setDataHandler()
+  }, [, data]);
 
   const __handleSearch = (event) => {
     setSearch(event.target.value);
@@ -45,6 +63,13 @@ function Orders() {
     setPage(new_page);
     setOrders(sliceData(data, new_page, 5));
   };
+  console.log('order response==>', data);
+  const options = [
+    'one', 
+    'two', 
+    'four'
+  ];
+  const defaultOption = options[0];
 
   return (
     <div className="dashboard-content">
@@ -76,18 +101,18 @@ function Orders() {
             <th>ACTION</th>
           </thead>
 
-          {orders.length !== 0 ? (
+          {orders?.length !== 0 ? (
             <tbody>
-              {orders.map((order, index) => (
+              {orders?.map((order, index) => (
                 <tr key={index}>
-                  <td>
-                    <span>{index}</span>
-                  </td>
                   <td>
                     <span>{order.id}</span>
                   </td>
                   <td>
-                    <span>{order.date}</span>
+                    <span>{order.orderNumber}</span>
+                  </td>
+                  <td>
+                    <span>{order.orderDate}</span>
                   </td>
                   <td>
                     <div>
@@ -104,33 +129,27 @@ function Orders() {
                   </td>
                   <td>
                     <div>
-                      {order.status === "Paid" ? (
-                        <img
-                          src={DoneIcon}
-                          alt="paid-icon"
-                          className="dashboard-content-icon"
-                        />
-                      ) : order.status === "Canceled" ? (
-                        <img
-                          src={CancelIcon}
-                          alt="canceled-icon"
-                          className="dashboard-content-icon"
-                        />
-                      ) : order.status === "Refunded" ? (
+                      {order.transactionStatus === "Pending" ? (
+                       <Dropdown options={options} onChange={(text)=> console.log('shsskjsksjl',text)} value={order.transactionStatus} placeholder="Select an option" />
+
+                      ) : order.transactionStatus === "Completed" ? (
+                        <Dropdown options={options} onChange={(text)=> console.log('shsskjsksjl',text)} value={order.transactionStatus} placeholder="Select an option" />
+
+                      ) : order.transactionStatus === "Refunded" ? (
                         <img
                           src={RefundedIcon}
                           alt="refunded-icon"
                           className="dashboard-content-icon"
                         />
                       ) : null}
-                      <span>{order.status}</span>
+                      <span>{order.transactionStatus}</span>
                     </div>
                   </td>
                   <td>
                     <span>{order.paid}</span>
                   </td>
                   <td>
-                    <span>${order.price}</span>
+                    <span>Rs.{order.orderdetails[0]?.total}</span>
                   </td>
 
                   {/* <td>
@@ -170,7 +189,7 @@ function Orders() {
           ) : null}
         </table>
 
-        {orders.length !== 0 ? (
+        {orders !== null || orders?.length !== 0  ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
