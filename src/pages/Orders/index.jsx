@@ -4,16 +4,9 @@ import DashboardHeader from "../../components/DashboardHeader";
 // import all_orders from "../../constants/orders";
 import useFetch from "../../hooks/useFetch";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
-
 import "../styles.css";
-import DoneIcon from "../../assets/icons/done.svg";
-import CancelIcon from "../../assets/icons/cancel.svg";
-import RefundedIcon from "../../assets/icons/refunded.svg";
-import menuIcon from "../../assets/icons/menu.png";
-import cancelIcon from "../../assets/icons/cancel.svg";
 import viewIcon from "../../assets/icons/view.png";
-// import Dropdown from "react-dropdown";
-// import "react-dropdown/style.css";
+import { NavLink } from "react-router-dom";
 
 function Orders() {
   const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
@@ -31,6 +24,8 @@ function Orders() {
     }
   }
   const [option, setOption] = useState(null);
+  const [orderId, setOrderId] = useState();
+  console.log(orderId);
   const bg_style =
     option === "Completed"
       ? setColor("completed")
@@ -91,7 +86,6 @@ function Orders() {
             <th>ID</th>
             <th>ORDER ID</th>
             <th>ORDER DATE</th>
-            {/* <th>COSTUMER</th> */}
             <th>STATUS</th>
             <th>PAID</th>
             <th>TOTAL AMOUNT</th>
@@ -114,16 +108,7 @@ function Orders() {
                     <td>
                       <span>{order.orderDate}</span>
                     </td>
-                    {/* <td>
-                      <div>
-                        <img
-                          src={order.image}
-                          className="dashboard-content-avatar"
-                          alt={order.category}
-                        />
-                        <span>{order.category}</span>
-                      </div>
-                    </td> */}
+
                     <td>
                       <div className="select-option">
                         <select
@@ -137,37 +122,6 @@ function Orders() {
                           <option>Rejected</option>
                         </select>
                       </div>
-
-                      {/* <div className="">
-                        {order.transactionStatus === "Pending" ? (
-                          <Dropdown
-                            options={options}
-                            onChange={(text) =>
-                              console.log("shsskjsksjl", text)
-                            }
-                            value={order.transactionStatus}
-                            placeholder="Select an option"
-                            className="option-dropdown"
-                          />
-                        ) : order.transactionStatus === "Completed" ? (
-                          <Dropdown
-                            options={options}
-                            className="drop_down"
-                            onChange={(text) =>
-                              console.log("shsskjsksjl", text)
-                            }
-                            value={order.transactionStatus}
-                            placeholder="Select an option"
-                          />
-                        ) : order.transactionStatus === "Refunded" ? (
-                          <img
-                            src={RefundedIcon}
-                            alt="refunded-icon"
-                            className="dashboard-content-icon"
-                          />
-                        ) : null}
-                        <span>{order.transactionStatus}</span>
-                      </div> */}
                     </td>
                     <td>
                       <span>{order.paid}</span>
@@ -175,39 +129,18 @@ function Orders() {
                     <td>
                       <span>Rs.{order.orderdetails[0]?.total}</span>
                     </td>
-
-                    {/* <td>
-                    <span>{order.paid}</span>
-                  </td> */}
                     <td>
                       <span className="dropmenu">
-                        <a to="#!" className="">
+                        <NavLink
+                          to="/orderView"
+                          onClick={() => setOrderId(order.id)}
+                        >
                           <img
                             className="menu_icon"
                             src={viewIcon}
                             alt="menu icon"
                           />
-                        </a>
-
-                        {/* <div class="menu-content">
-                          <div className="menu-link">
-                            <img
-                              className="menu_icon"
-                              src={viewIcon}
-                              alt="menu icon"
-                            />
-                            <img
-                              className="menu_icon"
-                              src={cancelIcon}
-                              alt="menu icon"
-                            />
-                            <img
-                              className="menu_icon"
-                              src={DoneIcon}
-                              alt="menu icon"
-                            />
-                          </div>
-                        </div> */}
+                        </NavLink>
                       </span>
                     </td>
                   </tr>

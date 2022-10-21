@@ -7,6 +7,7 @@ import "./App.css";
 import Orders from "./pages/Orders/index.jsx";
 import Products from "./pages/Product/product.jsx";
 import Login from "./components/login/login.jsx";
+import OrderView from "./pages/orderView./orderView";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
             <Route exact path="/orders" element={<Orders />} />
             <Route exact path="/products" element={<Products />} />
             <Route exact path="/login" element={<Login />} />
-            <Route exact path="/profile" element={<div></div>} />
+            <Route exact path="/orderView" element={<OrderView />} />
           </Routes>
         </div>
       </div>

@@ -8,9 +8,7 @@ import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
 
 function Orders() {
-  const { data, loading, error } = useFetch(
-    "/resello/api/v1/cms/listOrder"
-  );
+  const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
   console.log(data);
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState(null);
@@ -22,9 +20,9 @@ function Orders() {
   useEffect(() => {
     // setPagination(calculateRange(data, 8));
     setProducts(data?.data?.order);
-  }, [ data]);
-  console.log('data',data);
-  
+  }, [data]);
+  console.log("data ====>  ", data);
+
   const __handleSearch = (event) => {
     setSearch(event.target.value);
     if (event.target.value !== "") {
