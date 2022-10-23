@@ -5,10 +5,14 @@ import DashboardHeader from "../../components/DashboardHeader";
 import useFetch from "../../hooks/useFetch";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
+import completed from "../styles.css";
+import pending from "../styles.css";
+import rejected from "../styles.css";
+import canceled from "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
 
-function Orders() {
+function Orders(props) {
   const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
 
   const [search, setSearch] = useState("");
@@ -26,18 +30,31 @@ function Orders() {
   const [option, setOption] = useState(null);
   const [orderId, setOrderId] = useState();
   console.log(orderId);
-  const bg_style =
-    option === "Completed"
-      ? setColor("completed")
-      : option === "Rejected"
-      ? setColor("rejected")
-      : "completed";
-  const [color, setColor] = useState(bg_style);
   console.log(option);
 
   useEffect(() => {
     // setPagination(calculateRange(data, 8));
     setDataHandler();
+
+    let styleColor;
+    switch (data.transactionStatus) {
+      case "Completed":
+        styleColor = "completed";
+        break;
+      case "Pending":
+        styleColor = "pending";
+        break;
+      case "Rejected":
+        styleColor = "rejected";
+        break;
+      case "Canceled":
+        styleColor = "canceled";
+        break;
+      default:
+        styleColor = "rejected";
+    }
+    console.log(styleColor);
+    setBgColor(styleColor);
   }, [data]);
 
   const __handleSearch = (event) => {
@@ -60,9 +77,8 @@ function Orders() {
     setOrders(sliceData(data, new_page, 5));
   };
   console.log("order response==>", data);
-  // const options = ["one", "two", "four"];
-  // const defaultOption = options[0];
-
+  const [bgColor, setBgColor] = useState();
+  console.log(bgColor);
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
@@ -110,7 +126,7 @@ function Orders() {
                     </td>
 
                     <td>
-                      <div className="select-option">
+                      <div className={`${bgColor} select-option`}>
                         <select
                           value={option ? null : order.transactionStatus}
                           onChange={(e) => setOption(e.target.value)}

@@ -328,6 +328,7 @@ td span {
 
 .sec {
     display: flex;
+    margin-top: 1rem;
 }
 
 .order-title,

@@ -18,7 +18,18 @@ function App() {
         <div className="dashboard-body">
           <Routes>
             <Route exact path="/" element={<div></div>} />
-            <Route exact path="/orders" element={<Orders />} />
+            <Route
+              exact
+              path="/orders"
+              element={
+                <Orders
+                  completed={true}
+                  rejected={true}
+                  pending={true}
+                  canceled={true}
+                />
+              }
+            />
             <Route exact path="/products" element={<Products />} />
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/orderView" element={<OrderView />} />
