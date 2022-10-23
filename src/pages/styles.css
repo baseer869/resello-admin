@@ -224,8 +224,8 @@ td span {
     display: block;
 }
 
-.select-option {
-    border: 1px solid #6e6e6e;
+.select-option {    
+    border: 1px solid #CCC;  
     width: 8.1rem;
     border-radius: .2rem;
 }
@@ -279,14 +279,18 @@ td span {
 .order_detail label {
     text-align: start;
 }
-
 .input {
-    border: 1px solid #000000;
-    width: 90%;
-    height: 2.5rem;
-    border-radius: .2rem;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #CCC;
+    background-image: none;
+    width: 300px;
+    
 }
-
+ .input:focus {
+    /* outline-color: #54B4AD; */
+    border-color: rgb(142, 172, 132)
+}
 .order_detail {
     display: flex;
     flex-direction: column;
@@ -356,3 +360,26 @@ td span {
     width: 100%;
     height: 100%;
 }
+.text-style {
+    font-size: 18;
+    font-weight: 700;
+    list-style: none;
+    color: #000000;
+
+  }
+  .active-status{
+    font-size: 18;
+    font-weight: 700;
+    list-style: none;
+    padding: 8;
+    border-radius: 6;
+    background-color: rgb(37, 225, 190);
+  }
+  .inactive-status{
+    font-size: 18;
+    font-weight: 700;
+    list-style: none;
+    padding: 8;
+    border-radius: 6;
+    background-color:  rgb(225, 37, 162);
+  }

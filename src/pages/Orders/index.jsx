@@ -7,6 +7,8 @@ import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
+import API from '../../services/index';
+import { BASE_URL } from '../../config/config';
 
 function Orders() {
   const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
@@ -30,8 +32,8 @@ function Orders() {
     option === "Completed"
       ? setColor("completed")
       : option === "Rejected"
-      ? setColor("rejected")
-      : "completed";
+        ? setColor("rejected")
+        : "completed";
   const [color, setColor] = useState(bg_style);
   console.log(option);
 
@@ -62,6 +64,21 @@ function Orders() {
   console.log("order response==>", data);
   // const options = ["one", "two", "four"];
   // const defaultOption = options[0];
+
+  async function onChangeStatusHandler(e,id){
+    e.preventDefault()
+    setOption(e.target.value);
+    let statuBody = {
+        "transactionStatus":e.target.value,
+        "id":id,
+        "type":"credit",
+        "processed_by": null
+    }
+    console.log('called', statuBody);
+    let response = await API(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
+    console.log('RESPONSREEEEEEEEE', response);
+  }
+
 
   return (
     <div className="dashboard-content">
@@ -99,40 +116,41 @@ function Orders() {
               <tbody>
                 {orders?.map((order, index) => (
                   <tr key={index}>
-                    <td>
-                      <span>{order.id}</span>
+                    <td className="text">
+                      <span class="text-style">{order.id}</span>
                     </td>
                     <td>
-                      <span>{order.orderNumber}</span>
+                      <span class="text-style">{order.orderNumber}</span>
                     </td>
                     <td>
-                      <span>{order.orderDate}</span>
+                      <span class="text-style">{order.orderDate}</span>
                     </td>
 
                     <td>
                       <div className="select-option">
                         <select
                           value={option ? null : order.transactionStatus}
-                          onChange={(e) => setOption(e.target.value)}
+                          onChange={(e) => onChangeStatusHandler(e, order.id)}
                           className={`select-trans-status`}
                         >
                           <option>Completed</option>
                           <option>Pending</option>
                           <option>Canceled</option>
                           <option>Rejected</option>
+                          <option>Partially_Completed</option>
                         </select>
                       </div>
                     </td>
                     <td>
-                      <span>{order.paid}</span>
+                      <span class="text-style">{order.paid}</span>
                     </td>
                     <td>
-                      <span>Rs.{order.orderdetails[0]?.total}</span>
+                      <span class="text-style">Rs.{order.orderdetails[0]?.total}</span>
                     </td>
                     <td>
                       <span className="dropmenu">
                         <NavLink
-                          to="/orderView"
+                          to={`/orderView/${order.id}`}
                           onClick={() => setOrderId(order.id)}
                         >
                           <img

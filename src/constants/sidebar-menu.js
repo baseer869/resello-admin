@@ -12,22 +12,29 @@ const sidebar_menu = [
   },
   {
     id: 2,
+    icon: UserIcon,
+    path: "/UserListView",
+    title: "User",
+  },
+  
+  {
+    id: 3,
     icon: ProductIcon,
     path: "/orders",
     title: "Orders",
   },
   {
-    id: 3,
+    id: 4,
     icon: ShippingIcon,
     path: "/products",
     title: "Products",
   },
-  {
-    id: 4,
-    icon: UserIcon,
-    path: "/profile",
-    title: "My account",
-  },
+  // {
+  //   id: 4,
+  //   icon: UserIcon,
+  //   path: "/profile",
+  //   title: "My account",
+  // },
 ];
 
 export default sidebar_menu;

@@ -31,6 +31,8 @@ function SideBar ({ menu }) {
                     <img
                         src={logo}
                         alt="logo" />
+                        {/* <span className='app-logo'>Resello</span> */}
+
                 </div>
 
                 <div className='sidebar-container'>
