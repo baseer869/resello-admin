@@ -57,10 +57,10 @@ function Orders(props) {
   const __handleSearch = (event) => {
     setSearch(event.target.value);
     if (event.target.value !== "") {
-      let search_results = orders.filter(
+      let search_results = paginationOrder.filter(
         (item) =>
           item.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
-          item.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
+          item.id.toLowerCase().includes(search.toLowerCase()) ||
           item.orderDate.toLowerCase().includes(search.toLowerCase())
       );
       setOrders(search_results);
@@ -69,12 +69,7 @@ function Orders(props) {
     }
   };
 
-  // const __handleChangePage = (new_page) => {
-  //   setPage(new_page);
-  //   setOrders(sliceData(data, new_page, 5));
-  // };
-
-  const pageSize = 10;
+  const pageSize = 5;
   const pageCount = orders ? Math.ceil(orders.length / pageSize) : 0;
   if (pageCount === 1) return null;
   const pages = _.range(1, pageCount + 1);
@@ -85,6 +80,7 @@ function Orders(props) {
     const paginatedData = _(orders).slice(startIndex).take(pageSize).value();
     setPaginationOrder(paginatedData);
   };
+  console.log(paginationOrder);
 
   return (
     <div className="dashboard-content">
@@ -180,21 +176,32 @@ function Orders(props) {
 
         <span className="pagination">
           <ul className="pagination-sec">
+            <li>
+              <a href="#!" className="">
+                Prev
+              </a>
+            </li>
             {pages.map((page) => {
               return (
                 <li
+                  onClick={() => pagination(page)}
                   className={
                     page === currentPage
                       ? "pagination-list active"
                       : "pagination-list"
                   }
                 >
-                  <a href="#!" className="" onClick={() => pagination(page)}>
+                  <a href="#!" className="">
                     {page}
                   </a>
                 </li>
               );
             })}
+            <li>
+              <a href="#!" className="">
+                Next
+              </a>
+            </li>
           </ul>
         </span>
 

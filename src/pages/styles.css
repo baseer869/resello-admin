@@ -372,15 +372,18 @@ td span {
 
 .pagination ul li {
     list-style: none;
-    border: 1px solid #000000;
+    border: 1px solid #53b1dd;
+    border-radius: .3rem;
     padding: .7rem;
 }
 
 .pagination ul li a {
     font-size: 1rem;
     text-decoration: none;
+    color: #5f93ac;
 }
 
 .active {
-    background: #d3c9c9;
+    background: #e4e1e1;
+
 }
