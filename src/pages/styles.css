@@ -226,14 +226,14 @@ td span {
 
 .select-option {
     border: 1px solid #6e6e6e;
-    width: 8.1rem;
+    width: 10rem;
     border-radius: .2rem;
 }
 
 .select-trans-status {
     width: 10rem;
     height: 2rem;
-    padding: 0 1rem 0 1rem;
+    padding: 0 .5rem 0 .5rem;
     outline: none;
     background: none;
     border: none;
@@ -356,4 +356,31 @@ td span {
 .card-img img {
     width: 100%;
     height: 100%;
+}
+
+.pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+}
+
+.pagination ul {
+    display: flex;
+    gap: .1rem;
+}
+
+.pagination ul li {
+    list-style: none;
+    border: 1px solid #000000;
+    padding: .7rem;
+}
+
+.pagination ul li a {
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.active {
+    background: #d3c9c9;
 }

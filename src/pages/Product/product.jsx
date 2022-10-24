@@ -43,6 +43,13 @@ function Orders() {
     setProducts(sliceData(data, new_page, 8));
   };
 
+  // const Pagination = {
+  //   page: 1,
+  //   pages: 2,
+  //   count: 12,
+  //   per_page: 10,
+  // };
+
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Product" />

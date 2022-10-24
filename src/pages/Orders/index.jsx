@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-
+import _ from "lodash";
 // import all_orders from "../../constants/orders";
 import useFetch from "../../hooks/useFetch";
-import { calculateRange, sliceData } from "../../utils/table-pagination";
+// import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
-import completed from "../styles.css";
-import pending from "../styles.css";
-import rejected from "../styles.css";
-import canceled from "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
 
@@ -18,7 +14,8 @@ function Orders(props) {
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState(null);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState([]);
+  const [paginationOrder, setPaginationOrder] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
 
   function setDataHandler() {
     if (data && data.status === 200) {
@@ -27,17 +24,10 @@ function Orders(props) {
       setOrders(null);
     }
   }
-  const [option, setOption] = useState(null);
-  const [orderId, setOrderId] = useState();
-  console.log(orderId);
-  console.log(option);
 
-  useEffect(() => {
-    // setPagination(calculateRange(data, 8));
-    setDataHandler();
-
+  function bgStatusStyleHandler(status) {
     let styleColor;
-    switch (data.transactionStatus) {
+    switch (status) {
       case "Completed":
         styleColor = "completed";
         break;
@@ -47,14 +37,21 @@ function Orders(props) {
       case "Rejected":
         styleColor = "rejected";
         break;
-      case "Canceled":
+      case "Cancelled":
         styleColor = "canceled";
         break;
       default:
         styleColor = "rejected";
     }
-    console.log(styleColor);
-    setBgColor(styleColor);
+    return styleColor;
+  }
+
+  const [option, setOption] = useState(null);
+
+  useEffect(() => {
+    // setPagination(calculateRange(data, 8));
+    setDataHandler();
+    setPaginationOrder(_(orders).slice(0).take(pageSize).value());
   }, [data]);
 
   const __handleSearch = (event) => {
@@ -68,21 +65,30 @@ function Orders(props) {
       );
       setOrders(search_results);
     } else {
-      __handleChangePage(1);
+      // __handleChangePage(1);
     }
   };
 
-  const __handleChangePage = (new_page) => {
-    setPage(new_page);
-    setOrders(sliceData(data, new_page, 5));
+  // const __handleChangePage = (new_page) => {
+  //   setPage(new_page);
+  //   setOrders(sliceData(data, new_page, 5));
+  // };
+
+  const pageSize = 10;
+  const pageCount = orders ? Math.ceil(orders.length / pageSize) : 0;
+  if (pageCount === 1) return null;
+  const pages = _.range(1, pageCount + 1);
+
+  const pagination = (pageNum) => {
+    setCurrentPage(pageNum);
+    const startIndex = (pageNum - 1) * pageSize;
+    const paginatedData = _(orders).slice(startIndex).take(pageSize).value();
+    setPaginationOrder(paginatedData);
   };
-  console.log("order response==>", data);
-  const [bgColor, setBgColor] = useState();
-  console.log(bgColor);
+
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
-
       <div className="dashboard-content-container">
         <div className="dashboard-content-header">
           <h2>Orders List</h2>
@@ -113,7 +119,7 @@ function Orders(props) {
               "loading data please wait..."
             ) : (
               <tbody>
-                {orders?.map((order, index) => (
+                {paginationOrder?.map((order, index) => (
                   <tr key={index}>
                     <td>
                       <span>{order.id}</span>
@@ -126,16 +132,23 @@ function Orders(props) {
                     </td>
 
                     <td>
-                      <div className={`${bgColor} select-option`}>
+                      <div
+                        className={`${bgStatusStyleHandler(
+                          order.transactionStatus
+                        )} select-option`}
+                      >
                         <select
                           value={option ? null : order.transactionStatus}
                           onChange={(e) => setOption(e.target.value)}
                           className={`select-trans-status`}
                         >
+                          Pending Completed Shipped Cancelled
+                          Partially_Completed
                           <option>Completed</option>
                           <option>Pending</option>
-                          <option>Canceled</option>
-                          <option>Rejected</option>
+                          <option>Cancelled</option>
+                          <option>Shipped</option>
+                          <option>Partially_Completed</option>
                         </select>
                       </div>
                     </td>
@@ -147,10 +160,7 @@ function Orders(props) {
                     </td>
                     <td>
                       <span className="dropmenu">
-                        <NavLink
-                          to="/orderView"
-                          onClick={() => setOrderId(order.id)}
-                        >
+                        <NavLink to="/orderView">
                           <img
                             className="menu_icon"
                             src={viewIcon}
@@ -168,7 +178,27 @@ function Orders(props) {
           )}
         </table>
 
-        {orders !== null || orders?.length !== 0 ? (
+        <span className="pagination">
+          <ul className="pagination-sec">
+            {pages.map((page) => {
+              return (
+                <li
+                  className={
+                    page === currentPage
+                      ? "pagination-list active"
+                      : "pagination-list"
+                  }
+                >
+                  <a href="#!" className="" onClick={() => pagination(page)}>
+                    {page}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </span>
+
+        {/* {orders !== null || orders?.length !== 0 ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
@@ -184,7 +214,7 @@ function Orders(props) {
           <div className="dashboard-content-footer">
             <span className="empty-table">No data</span>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
