@@ -1,86 +1,54 @@
 import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
 import _ from "lodash";
-// import all_orders from "../../constants/orders";
 import useFetch from "../../hooks/useFetch";
-// import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
-
-function Orders(props) {
-  const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
-
-  const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState(null);
+import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
+function Orders() {
   const [page, setPage] = useState(1);
-  const [paginationOrder, setPaginationOrder] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [per_page, setPer_Page] = useState(10);
+  const [sort_Order, setSort_Order] = useState("DESC");
+  const [pagination, setPagination] = useState();
+  const { data, loading, reFetch } = useFetch(
+    `/resello/api/v1/cms/listOrder?transStatus=Pending&page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
+  );
+
+  const [orders, setOrders] = useState(null);
+  const [option, setOption] = useState(null);
 
   function setDataHandler() {
     if (data && data.status === 200) {
       setOrders(data?.data.order);
+      setPagination(data?.data.pagination);
     } else if (data.status === 202) {
       setOrders(null);
     }
   }
 
-  function bgStatusStyleHandler(status) {
-    let styleColor;
-    switch (status) {
-      case "Completed":
-        styleColor = "completed";
-        break;
-      case "Pending":
-        styleColor = "pending";
-        break;
-      case "Rejected":
-        styleColor = "rejected";
-        break;
-      case "Cancelled":
-        styleColor = "canceled";
-        break;
-      default:
-        styleColor = "rejected";
-    }
-    return styleColor;
-  }
-
-  const [option, setOption] = useState(null);
-
   useEffect(() => {
-    // setPagination(calculateRange(data, 8));
     setDataHandler();
-    setPaginationOrder(_(orders).slice(0).take(pageSize).value());
-  }, [data]);
+  }, [orders, page]);
 
-  const __handleSearch = (event) => {
-    setSearch(event.target.value);
-    if (event.target.value !== "") {
-      let search_results = paginationOrder.filter(
-        (item) =>
-          item.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
-          item.id.toLowerCase().includes(search.toLowerCase()) ||
-          item.orderDate.toLowerCase().includes(search.toLowerCase())
-      );
-      setOrders(search_results);
-    } else {
-      // __handleChangePage(1);
-    }
-  };
-
-  const pageSize = 5;
-  const pageCount = orders ? Math.ceil(orders.length / pageSize) : 0;
-  if (pageCount === 1) return null;
+  const pageCount = orders
+    ? Math.ceil(pagination.count / pagination.per_page)
+    : 0;
+  // if (pageCount === 1) return null;
   const pages = _.range(1, pageCount + 1);
+  console.log(pages);
 
-  const pagination = (pageNum) => {
-    setCurrentPage(pageNum);
-    const startIndex = (pageNum - 1) * pageSize;
-    const paginatedData = _(orders).slice(startIndex).take(pageSize).value();
-    setPaginationOrder(paginatedData);
+  const HandleNext = () => {
+    setPage((pagination.page += 1));
+    reFetch();
   };
-  console.log(paginationOrder);
+
+  const HandlePrev = () => {
+    setPage((pagination.page += 1));
+    reFetch();
+  };
+
+  console.log(page);
 
   return (
     <div className="dashboard-content">
@@ -91,10 +59,8 @@ function Orders(props) {
           <div className="dashboard-content-search">
             <input
               type="text"
-              value={search}
               placeholder="Search.."
               className="dashboard-content-input"
-              onChange={(e) => __handleSearch(e)}
             />
           </div>
         </div>
@@ -110,12 +76,12 @@ function Orders(props) {
             <th>ACTION</th>
           </thead>
 
-          {orders?.length !== 0 ? (
+          {orders !== null || orders?.length !== 0 ? (
             loading ? (
-              "loading data please wait..."
+              "loading Data Please Wait..."
             ) : (
               <tbody>
-                {paginationOrder?.map((order, index) => (
+                {orders?.map((order, index) => (
                   <tr key={index}>
                     <td>
                       <span>{order.id}</span>
@@ -138,8 +104,6 @@ function Orders(props) {
                           onChange={(e) => setOption(e.target.value)}
                           className={`select-trans-status`}
                         >
-                          Pending Completed Shipped Cancelled
-                          Partially_Completed
                           <option>Completed</option>
                           <option>Pending</option>
                           <option>Cancelled</option>
@@ -169,12 +133,34 @@ function Orders(props) {
                 ))}
               </tbody>
             )
-          ) : (
-            "Loading Please wait"
-          )}
+          ) : null}
         </table>
 
         <span className="pagination">
+          <ul className="pagination-sec">
+            <li onClick={HandlePrev}>
+              <a href="#!" className="">
+                Prev
+              </a>
+            </li>
+            {pages?.map((page, index) => {
+              return (
+                <li onClick={() => setPage(index)}>
+                  <a href="#!" key={index} className="">
+                    {page}
+                  </a>
+                </li>
+              );
+            })}
+            <li onClick={HandleNext}>
+              <a href="#!" className="">
+                Next
+              </a>
+            </li>
+          </ul>
+        </span>
+
+        {/* <span className="pagination">
           <ul className="pagination-sec">
             <li>
               <a href="#!" className="">
@@ -203,25 +189,7 @@ function Orders(props) {
               </a>
             </li>
           </ul>
-        </span>
-
-        {/* {orders !== null || orders?.length !== 0 ? (
-          <div className="dashboard-content-footer">
-            {pagination.map((item, index) => (
-              <span
-                key={index}
-                className={item === page ? "active-pagination" : "pagination"}
-                onClick={() => __handleChangePage(item)}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <div className="dashboard-content-footer">
-            <span className="empty-table">No data</span>
-          </div>
-        )} */}
+        </span> */}
       </div>
     </div>
   );

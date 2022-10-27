@@ -3,7 +3,6 @@ import DashboardHeader from "../../components/DashboardHeader";
 
 // import all_products from "../../constants/product.js";
 import useFetch from "../../hooks/useFetch.js";
-import { calculateRange, sliceData } from "../../utils/table-pagination";
 
 import "../styles.css";
 
@@ -40,16 +39,8 @@ function Orders() {
 
   const __handleChangePage = (new_page) => {
     setPage(new_page);
-    setProducts(sliceData(data, new_page, 8));
+    setProducts(data, new_page, 8);
   };
-
-  // const Pagination = {
-  //   page: 1,
-  //   pages: 2,
-  //   count: 12,
-  //   per_page: 10,
-  // };
-
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Product" />
@@ -67,7 +58,6 @@ function Orders() {
             />
           </div>
         </div>
-
         <table>
           <thead>
             <th>ID</th>
@@ -113,7 +103,7 @@ function Orders() {
           ) : null}
         </table>
 
-        {/* {products?.length !== 0 ? (
+        {products?.length !== 0 ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
@@ -129,7 +119,7 @@ function Orders() {
           <div className="dashboard-content-footer">
             <span className="empty-table">No data</span>
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );

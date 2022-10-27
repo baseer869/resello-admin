@@ -342,7 +342,7 @@ td span {
     display: flex;
     align-items: center;
     gap: 2rem;
-    border: 1px solid #494949;
+    border: 1px solid #53b1dd;
     padding: 1rem;
     border-radius: .3rem;
     background: #f3f3f3;
@@ -386,4 +386,10 @@ td span {
 .active {
     background: #e4e1e1;
 
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    align-content: center;
 }
