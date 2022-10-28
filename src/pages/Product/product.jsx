@@ -7,40 +7,22 @@ import useFetch from "../../hooks/useFetch.js";
 import "../styles.css";
 
 function Orders() {
-  const { data, loading, error } = useFetch("/resello/api/v1/cms/listOrder");
-  console.log(data);
-  const [search, setSearch] = useState("");
-  const [products, setProducts] = useState(null);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState([]);
+  const [per_page, setPer_Page] = useState(10);
+  const [sort_Order, setSort_Order] = useState("DESC");
+  const { data, loading, reFetch } = useFetch(
+    `/resello/api/v1/cms/listOrder?transStatus=Pending&page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
+  );
+  console.log(data);
+  const [products, setProducts] = useState(null);
 
   console.log(products);
 
   useEffect(() => {
-    // setPagination(calculateRange(data, 8));
     setProducts(data?.data?.order);
   }, [data]);
-  console.log("data ====>  ", data);
+  console.log("data ====>  ", products);
 
-  const __handleSearch = (event) => {
-    setSearch(event.target.value);
-    if (event.target.value !== "") {
-      let search_results = products.filter(
-        (item) =>
-          item.title.toLowerCase().includes(search.toLowerCase()) ||
-          item.title.toLowerCase().includes(search.toLowerCase()) ||
-          item.title.toLowerCase().includes(search.toLowerCase())
-      );
-      setProducts(search_results);
-    } else {
-      __handleChangePage(1);
-    }
-  };
-
-  const __handleChangePage = (new_page) => {
-    setPage(new_page);
-    setProducts(data, new_page, 8);
-  };
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Product" />
@@ -51,10 +33,8 @@ function Orders() {
           <div className="dashboard-content-search">
             <input
               type="text"
-              value={search}
               placeholder="Search.."
               className="dashboard-content-input"
-              onChange={(e) => __handleSearch(e)}
             />
           </div>
         </div>
@@ -103,13 +83,13 @@ function Orders() {
           ) : null}
         </table>
 
-        {products?.length !== 0 ? (
+        {/* {products?.length !== 0 ? (
           <div className="dashboard-content-footer">
             {pagination.map((item, index) => (
               <span
                 key={index}
                 className={item === page ? "active-pagination" : "pagination"}
-                onClick={() => __handleChangePage(item)}
+                // onClick={() => __handleChangePage(item)}
               >
                 {item}
               </span>
@@ -119,7 +99,7 @@ function Orders() {
           <div className="dashboard-content-footer">
             <span className="empty-table">No data</span>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

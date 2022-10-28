@@ -11,10 +11,10 @@ const useFetch = (url) => {
       try {
         const config = {
           headers: {
-            'Access-Control-Allow-Origin' : '*',
+            "Access-Control-Allow-Origin": "*",
           },
         };
-        const res = await axios.get(url,config);
+        const res = await axios.get(url, config);
         setData(res.data);
       } catch (error) {
         setError(error);

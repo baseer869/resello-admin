@@ -8,16 +8,16 @@ import { NavLink } from "react-router-dom";
 import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
 function Orders() {
   const [page, setPage] = useState(1);
-  const [per_page, setPer_Page] = useState(10);
+  const [currentPage, setCurrentPage] = useState(page);
+  const [per_page, setPer_Page] = useState(5);
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
   const { data, loading, reFetch } = useFetch(
-    `/resello/api/v1/cms/listOrder?transStatus=Pending&page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
+    `/resello/api/v1/cms/listOrder?transStatus=Cancelled&page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
   );
 
   const [orders, setOrders] = useState(null);
   const [option, setOption] = useState(null);
-
   function setDataHandler() {
     if (data && data.status === 200) {
       setOrders(data?.data.order);
@@ -27,27 +27,19 @@ function Orders() {
     }
   }
 
+  console.log(`TRhe current page ${currentPage}`);
   useEffect(() => {
     setDataHandler();
-  }, [orders, page]);
+    setCurrentPage(page);
+  }, [orders, reFetch]);
 
+  console.log(orders);
   const pageCount = orders
     ? Math.ceil(pagination.count / pagination.per_page)
     : 0;
-  // if (pageCount === 1) return null;
+  if (pageCount === 0) return null;
   const pages = _.range(1, pageCount + 1);
   console.log(pages);
-
-  const HandleNext = () => {
-    setPage((pagination.page += 1));
-    reFetch();
-  };
-
-  const HandlePrev = () => {
-    setPage((pagination.page += 1));
-    reFetch();
-  };
-
   console.log(page);
 
   return (
@@ -138,25 +130,19 @@ function Orders() {
 
         <span className="pagination">
           <ul className="pagination-sec">
-            <li onClick={HandlePrev}>
-              <a href="#!" className="">
-                Prev
-              </a>
-            </li>
             {pages?.map((page, index) => {
               return (
-                <li onClick={() => setPage(index)}>
+                <li
+                  key={index}
+                  className={page === currentPage ? "active" : ""}
+                  onClick={() => setPage(page)}
+                >
                   <a href="#!" key={index} className="">
                     {page}
                   </a>
                 </li>
               );
             })}
-            <li onClick={HandleNext}>
-              <a href="#!" className="">
-                Next
-              </a>
-            </li>
           </ul>
         </span>
 

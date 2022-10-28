@@ -248,13 +248,11 @@ td span {
 .details {
     display: flex;
     flex-direction: column;
-    /* gap: 5rem; */
 }
 
 
 .order-detail {
     display: flex;
-    /* align-items: center; */
 }
 
 .img-sec {
@@ -375,6 +373,7 @@ td span {
     border: 1px solid #53b1dd;
     border-radius: .3rem;
     padding: .7rem;
+    cursor: pointer;
 }
 
 .pagination ul li a {
