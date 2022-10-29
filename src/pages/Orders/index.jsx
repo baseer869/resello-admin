@@ -9,11 +9,12 @@ import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
 function Orders() {
   const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(page);
-  const [per_page, setPer_Page] = useState(5);
+  const [per_page, setPer_Page] = useState(10);
+  const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
   const { data, loading, reFetch } = useFetch(
-    `/resello/api/v1/cms/listOrder?transStatus=Cancelled&page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
+    `/resello/api/v1/cms/listOrder?page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
   );
 
   const [orders, setOrders] = useState(null);
@@ -31,16 +32,17 @@ function Orders() {
   useEffect(() => {
     setDataHandler();
     setCurrentPage(page);
-  }, [orders, reFetch]);
-
-  console.log(orders);
+    setTransStatus(option);
+  }, [orders, option, page, reFetch]);
+  console.log(transStatus);
+  // console.log(orders);
   const pageCount = orders
     ? Math.ceil(pagination.count / pagination.per_page)
     : 0;
   if (pageCount === 0) return null;
   const pages = _.range(1, pageCount + 1);
-  console.log(pages);
-  console.log(page);
+  // console.log(pages);
+  // console.log(page);
 
   return (
     <div className="dashboard-content">
@@ -130,6 +132,11 @@ function Orders() {
 
         <span className="pagination">
           <ul className="pagination-sec">
+            <li onClick={() => setPage(currentPage - 1)}>
+              <a href="#!" className="">
+                Prev
+              </a>
+            </li>
             {pages?.map((page, index) => {
               return (
                 <li
@@ -143,6 +150,11 @@ function Orders() {
                 </li>
               );
             })}
+            <li onClick={() => setPage(currentPage + 1)}>
+              <a href="#!" className="">
+                Next
+              </a>
+            </li>
           </ul>
         </span>
 
