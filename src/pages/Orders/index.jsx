@@ -65,14 +65,14 @@ function Orders() {
   // const options = ["one", "two", "four"];
   // const defaultOption = options[0];
 
-  async function onChangeStatusHandler(e,id){
+  async function onChangeStatusHandler(e, id) {
     e.preventDefault()
     setOption(e.target.value);
     let statuBody = {
-        "transactionStatus":e.target.value,
-        "id":id,
-        "type":"credit",
-        "processed_by": null
+      "transactionStatus": e.target.value,
+      "id": id,
+      "type": "credit",
+      "processed_by": null
     }
     console.log('called', statuBody);
     let response = await API(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
