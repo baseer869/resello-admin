@@ -44,6 +44,21 @@ function Orders() {
   // console.log(pages);
   // console.log(page);
 
+  async function onChangeStatusHandler(e, id) {
+    e.preventDefault()
+    setOption(e.target.value);
+    let statuBody = {
+      "transactionStatus": e.target.value,
+      "id": id,
+      "type": "credit",
+      "processed_by": null
+    }
+    console.log('called', statuBody);
+    let response = await API(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
+    console.log('RESPONSREEEEEEEEE', response);
+  }
+
+
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
@@ -77,14 +92,14 @@ function Orders() {
               <tbody>
                 {orders?.map((order, index) => (
                   <tr key={index}>
-                    <td>
-                      <span>{order.id}</span>
+                    <td className="text">
+                      <span class="text-style">{order.id}</span>
                     </td>
                     <td>
-                      <span>{order.orderNumber}</span>
+                      <span class="text-style">{order.orderNumber}</span>
                     </td>
                     <td>
-                      <span>{order.orderDate}</span>
+                      <span class="text-style">{order.orderDate}</span>
                     </td>
 
                     <td>
@@ -95,7 +110,7 @@ function Orders() {
                       >
                         <select
                           value={option ? null : order.transactionStatus}
-                          onChange={(e) => setOption(e.target.value)}
+                          onChange={(e) => onChangeStatusHandler(e, order.id)}
                           className={`select-trans-status`}
                         >
                           <option>Completed</option>
@@ -107,10 +122,10 @@ function Orders() {
                       </div>
                     </td>
                     <td>
-                      <span>{order.paid}</span>
+                      <span class="text-style">{order.paid}</span>
                     </td>
                     <td>
-                      <span>Rs.{order.orderdetails[0]?.total}</span>
+                      <span class="text-style">Rs.{order.orderdetails[0]?.total}</span>
                     </td>
                     <td>
                       <span className="dropmenu">

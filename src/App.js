@@ -7,12 +7,13 @@ import "./App.css";
 import Orders from "./pages/Orders/index.jsx";
 import Products from "./pages/Product/product.jsx";
 import Login from "./components/login/login.jsx";
-import OrderView from "./pages/orderView./orderView";
+import OrderView from "./pages/orderView/orderView";
+import UserListView from './pages/User/Index'
 
 function App() {
   return (
     <Router>
-      <div className="dashboard-container">
+      <div className="dashboard-container"> 
         <SideBar menu={sidebar_menu} />
         {process.env.SERVER}
         <div className="dashboard-body">
@@ -31,8 +32,7 @@ function App() {
               }
             />
             <Route exact path="/products" element={<Products />} />
-            <Route exact path="/login" element={<Login />} />
-            <Route exact path="/orderView" element={<OrderView />} />
+            <Route exact path="/orderView/:id" element={<OrderView />} />
           </Routes>
         </div>
       </div>

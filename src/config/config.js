@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://suppliier-new-staging-app.herokuapp.com/resello/api/v1/cms'
