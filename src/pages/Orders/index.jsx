@@ -9,7 +9,7 @@ import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
 function Orders() {
   const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(page);
-  const [per_page, setPer_Page] = useState(10);
+  const [per_page, setPer_Page] = useState(5);
   const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
