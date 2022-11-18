@@ -8,10 +8,7 @@ import Orders from "./pages/Orders/index.jsx";
 import Products from "./pages/Product/product.jsx";
 import Login from "./components/login/login.jsx";
 import OrderView from "./pages/orderView/orderView";
-<<<<<<< Updated upstream
 import UserListView from './pages/User/Index'
-=======
->>>>>>> Stashed changes
 
 function App() {
   return (

@@ -6,6 +6,11 @@ import "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
 import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
+import Api from "../../services";
+import { BASE_URL} from '../../config/config';
+import { Modal } from "../../components/modal/Modal";
+
+
 function Orders() {
   const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(page);
@@ -13,16 +18,33 @@ function Orders() {
   const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
+ 
+  
+  const [showModal, setShowModal] = useState(false);
+
+  // const openModal = () => {
+  //   setShowModal(true);
+  // };
+
+
+
+//--//
+
   const { data, loading, reFetch } = useFetch(
     `/resello/api/v1/cms/listOrder?page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
   );
 
   const [orders, setOrders] = useState(null);
   const [option, setOption] = useState(null);
+
+
+
   function setDataHandler() {
+    setShowModal(true);
     if (data && data.status === 200) {
       setOrders(data?.data.order);
       setPagination(data?.data.pagination);
+      setShowModal(false);
     } else if (data.status === 202) {
       setOrders(null);
     }
@@ -54,14 +76,16 @@ function Orders() {
       "processed_by": null
     }
     console.log('called', statuBody);
-    let response = await API(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
+    let response = await Api(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
     console.log('RESPONSREEEEEEEEE', response);
   }
+
 
 
   return (
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
+      { showModal && <Modal />}
       <div className="dashboard-content-container">
         <div className="dashboard-content-header">
           <h2>Orders List</h2>
