@@ -7,28 +7,26 @@ import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
 import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
 import Api from "../../services";
-import { BASE_URL} from '../../config/config';
+import { BASE_URL } from "../../config/config";
 import { Modal } from "../../components/modal/Modal";
-
+import Overlay from "../../components/overlay/index";
 
 function Orders() {
+  const [spinloading, setSpinLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(page);
   const [per_page, setPer_Page] = useState(5);
   const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
- 
-  
+
   const [showModal, setShowModal] = useState(false);
 
   // const openModal = () => {
   //   setShowModal(true);
   // };
 
-
-
-//--//
+  //--//
 
   const { data, loading, reFetch } = useFetch(
     `/resello/api/v1/cms/listOrder?page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
@@ -37,14 +35,14 @@ function Orders() {
   const [orders, setOrders] = useState(null);
   const [option, setOption] = useState(null);
 
-
-
   function setDataHandler() {
-    setShowModal(true);
+    // setShowModal(true);
+
     if (data && data.status === 200) {
       setOrders(data?.data.order);
       setPagination(data?.data.pagination);
-      setShowModal(false);
+      // setShowModal(false);
+      setSpinLoading(false);
     } else if (data.status === 202) {
       setOrders(null);
     }
@@ -52,6 +50,7 @@ function Orders() {
 
   console.log(`TRhe current page ${currentPage}`);
   useEffect(() => {
+    setSpinLoading(true);
     setDataHandler();
     setCurrentPage(page);
     setTransStatus(option);
@@ -67,137 +66,158 @@ function Orders() {
   // console.log(page);
 
   async function onChangeStatusHandler(e, id) {
-    e.preventDefault()
+    e.preventDefault();
     setOption(e.target.value);
     let statuBody = {
-      "transactionStatus": e.target.value,
-      "id": id,
-      "type": "credit",
-      "processed_by": null
+      transactionStatus: e.target.value,
+      id: id,
+      type: "credit",
+      processed_by: null,
+    };
+    console.log("called", statuBody);
+    let response = await Api(
+      `${BASE_URL}/changeOrderStatus`,
+      statuBody,
+      "POST",
+      null
+    );
+    console.log("RESPONSREEEEEEEEE", response);
+    {
+      response.status === 200 &&
+        bgStatusStyleHandler(statuBody.transactionStatus);
     }
-    console.log('called', statuBody);
-    let response = await Api(`${BASE_URL}/changeOrderStatus`, statuBody, 'POST', null);
-    console.log('RESPONSREEEEEEEEE', response);
   }
 
-
-
   return (
-    <div className="dashboard-content">
-      <DashboardHeader btnText="New Order" />
-      { showModal && <Modal />}
-      <div className="dashboard-content-container">
-        <div className="dashboard-content-header">
-          <h2>Orders List</h2>
-          <div className="dashboard-content-search">
-            <input
-              type="text"
-              placeholder="Search.."
-              className="dashboard-content-input"
-            />
-          </div>
-        </div>
+    <>
+      {/* setting loader  */}
+      {spinloading ? (
+        <Overlay loadingText="Page" />
+      ) : (
+        <div className="dashboard-content">
+          <DashboardHeader btnText="New Order" />
+          {showModal && <Modal />}
 
-        <table>
-          <thead>
-            <th>ID</th>
-            <th>ORDER ID</th>
-            <th>ORDER DATE</th>
-            <th>STATUS</th>
-            <th>PAID</th>
-            <th>TOTAL AMOUNT</th>
-            <th>ACTION</th>
-          </thead>
+          <div className="dashboard-content-container">
+            <div className="dashboard-content-header">
+              <h2>Orders List</h2>
+              <div className="dashboard-content-search">
+                <input
+                  type="text"
+                  placeholder="Search.."
+                  className="dashboard-content-input"
+                />
+              </div>
+            </div>
 
-          {orders !== null || orders?.length !== 0 ? (
-            loading ? (
-              "loading Data Please Wait..."
+            {loading ? (
+              <Overlay className="overlay-center" loadingText="Data" />
             ) : (
-              <tbody>
-                {orders?.map((order, index) => (
-                  <tr key={index}>
-                    <td className="text">
-                      <span class="text-style">{order.id}</span>
-                    </td>
-                    <td>
-                      <span class="text-style">{order.orderNumber}</span>
-                    </td>
-                    <td>
-                      <span class="text-style">{order.orderDate}</span>
-                    </td>
+              <table>
+                <thead>
+                  <th>ID</th>
+                  <th>ORDER ID</th>
+                  <th>ORDER DATE</th>
+                  <th>STATUS</th>
+                  <th>PAID</th>
+                  <th>TOTAL AMOUNT</th>
+                  <th>ACTION</th>
+                </thead>
 
-                    <td>
-                      <div
-                        className={`${bgStatusStyleHandler(
-                          order.transactionStatus
-                        )} select-option`}
-                      >
-                        <select
-                          value={option ? null : order.transactionStatus}
-                          onChange={(e) => onChangeStatusHandler(e, order.id)}
-                          className={`select-trans-status`}
-                        >
-                          <option>Completed</option>
-                          <option>Pending</option>
-                          <option>Cancelled</option>
-                          <option>Shipped</option>
-                          <option>Partially_Completed</option>
-                        </select>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="text-style">{order.paid}</span>
-                    </td>
-                    <td>
-                      <span class="text-style">Rs.{order.orderdetails[0]?.total}</span>
-                    </td>
-                    <td>
-                      <span className="dropmenu">
-                        <NavLink to="/orderView">
-                          <img
-                            className="menu_icon"
-                            src={viewIcon}
-                            alt="menu icon"
-                          />
-                        </NavLink>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            )
-          ) : null}
-        </table>
+                {orders !== null || orders?.length !== 0 ? (
+                  loading ? (
+                    <Overlay className="overlay-center" spinText="Data" />
+                  ) : (
+                    <tbody>
+                      {orders?.map((order, index) => (
+                        <tr key={index}>
+                          <td className="text">
+                            <span class="text-style">{order.id}</span>
+                          </td>
+                          <td>
+                            <span class="text-style">{order.orderNumber}</span>
+                          </td>
+                          <td>
+                            <span class="text-style">{order.orderDate}</span>
+                          </td>
 
-        <span className="pagination">
-          <ul className="pagination-sec">
-            <li onClick={() => setPage(currentPage - 1)}>
-              <a href="#!" className="">
-                Prev
-              </a>
-            </li>
-            {pages?.map((page, index) => {
-              return (
-                <li
-                  key={index}
-                  className={page === currentPage ? "active" : ""}
-                  onClick={() => setPage(page)}
-                >
-                  <a href="#!" key={index} className="">
-                    {page}
+                          <td>
+                            <div
+                              className={`${bgStatusStyleHandler(
+                                order.transactionStatus
+                              )} select-option`}
+                            >
+                              <select
+                                value={option ? null : order.transactionStatus}
+                                onChange={(e) =>
+                                  onChangeStatusHandler(e, order.id)
+                                }
+                                className={`select-trans-status`}
+                              >
+                                <option>Completed</option>
+                                <option>Pending</option>
+                                <option>Cancelled</option>
+                                <option>Shipped</option>
+                                <option>Partially_Completed</option>
+                              </select>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="text-style">{order.paid}</span>
+                          </td>
+                          <td>
+                            <span class="text-style">
+                              Rs.{order.orderdetails[0]?.total}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="dropmenu">
+                              <NavLink to="/orderView">
+                                <img
+                                  className="menu_icon"
+                                  src={viewIcon}
+                                  alt="menu icon"
+                                />
+                              </NavLink>
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )
+                ) : null}
+              </table>
+            )}
+
+            <span className="pagination">
+              <ul className="pagination-sec">
+                <li onClick={() => setPage(currentPage - 1)}>
+                  <a href="#!" className="">
+                    Prev
                   </a>
                 </li>
-              );
-            })}
-            <li onClick={() => setPage(currentPage + 1)}>
-              <a href="#!" className="">
-                Next
-              </a>
-            </li>
-          </ul>
-        </span>
+                {pages?.map((page, index) => {
+                  return (
+                    <li
+                      key={index}
+                      className={page === currentPage ? "active" : ""}
+                      onClick={() => setPage(page)}
+                    >
+                      <a href="#!" key={index} className="">
+                        {page}
+                      </a>
+                    </li>
+                  );
+                })}
+                <li onClick={() => setPage(currentPage + 1)}>
+                  <a href="#!" className="">
+                    Next
+                  </a>
+                </li>
+              </ul>
+            </span>
 
-        {/* <span className="pagination">
+            {/* <span className="pagination">
           <ul className="pagination-sec">
             <li>
               <a href="#!" className="">
@@ -227,8 +247,10 @@ function Orders() {
             </li>
           </ul>
         </span> */}
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

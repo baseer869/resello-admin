@@ -11,12 +11,12 @@
 }
 
 .completed {
-    background-color: #4cb64cff;
+    background-color: #BBB64C;
     color: black;
 }
 
 .partially_completed {
-    background: #28a328;
+    background: #5BB7D4;
 }
 
 .rejected {
@@ -25,15 +25,22 @@
 }
 
 .canceled {
-    background: #e3503eff;
+    background: #E3503E;
     color: white;
 }
 
 .pending {
-    background: #1e91cfff;
+    background: #EFA637;
     color: white;
 }
 
 .shipped {
-    background: #1e91cfff;
+    background: #4891D0;
 }
+
+/* 
+1. Pending  #EFA637
+2. Processing partialyy completed #5BB7D4
+3. Completed #BBB64C
+4. cancelled #E3503E
+5. shipped #4891D0 */

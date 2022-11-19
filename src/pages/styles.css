@@ -224,8 +224,8 @@ td span {
     display: block;
 }
 
-.select-option {    
-    border: 1px solid #CCC;  
+.select-option {
+    border: 1px solid #CCC;
     width: 8.1rem;
     border-radius: .2rem;
 }
@@ -233,7 +233,7 @@ td span {
 .select-trans-status {
     width: 10rem;
     height: 2rem;
-    padding: 0 .5rem 0 .5rem;
+    padding: 0 .5rem 0 .2rem;
     outline: none;
     background: none;
     border: none;
@@ -277,18 +277,21 @@ td span {
 .order_detail label {
     text-align: start;
 }
+
 .input {
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #CCC;
     background-image: none;
     width: 300px;
-    
+
 }
- .input:focus {
+
+.input:focus {
     /* outline-color: #54B4AD; */
     border-color: rgb(142, 172, 132)
 }
+
 .order_detail {
     display: flex;
     flex-direction: column;
@@ -395,4 +398,10 @@ td span {
     display: flex;
     align-items: center;
     align-content: center;
+}
+
+.overlay-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

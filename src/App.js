@@ -6,14 +6,15 @@ import sidebar_menu from "./constants/sidebar-menu";
 import "./App.css";
 import Orders from "./pages/Orders/index.jsx";
 import Products from "./pages/Product/product.jsx";
-import Login from "./components/login/login.jsx";
+// import Login from "./components/login/login.jsx";
 import OrderView from "./pages/orderView/orderView";
-import UserListView from './pages/User/Index'
+// import UserListView from './pages/User/Index'
+// import Overlay from "./components/overlay/index"
 
 function App() {
   return (
     <Router>
-      <div className="dashboard-container"> 
+      <div className="dashboard-container">
         <SideBar menu={sidebar_menu} />
         {process.env.SERVER}
         <div className="dashboard-body">
