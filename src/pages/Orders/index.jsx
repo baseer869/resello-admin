@@ -10,6 +10,7 @@ import Api from "../../services";
 import { BASE_URL } from "../../config/config";
 import { Modal } from "../../components/modal/Modal";
 import Overlay from "../../components/overlay/index";
+import ChangeStatus from "../../utils/ChangeStatus";
 
 function Orders() {
   const [spinloading, setSpinLoading] = useState(false);
@@ -19,14 +20,10 @@ function Orders() {
   const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
+  const [statusloading, setStatusLoading] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-
-  // const openModal = () => {
-  //   setShowModal(true);
-  // };
-
-  //--//
+  // new useState changes
+  const [updateStatus, setUpdateStatus] = useState(null);
 
   const { data, loading, reFetch } = useFetch(
     `/resello/api/v1/cms/listOrder?page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
@@ -36,12 +33,9 @@ function Orders() {
   const [option, setOption] = useState(null);
 
   function setDataHandler() {
-    // setShowModal(true);
-
     if (data && data.status === 200) {
       setOrders(data?.data.order);
       setPagination(data?.data.pagination);
-      // setShowModal(false);
       setSpinLoading(false);
     } else if (data.status === 202) {
       setOrders(null);
@@ -56,6 +50,7 @@ function Orders() {
     setTransStatus(option);
   }, [orders, option, page, reFetch]);
   console.log(transStatus);
+
   // console.log(orders);
   const pageCount = orders
     ? Math.ceil(pagination.count / pagination.per_page)
@@ -65,28 +60,32 @@ function Orders() {
   // console.log(pages);
   // console.log(page);
 
-  async function onChangeStatusHandler(e, id) {
-    e.preventDefault();
-    setOption(e.target.value);
-    let statuBody = {
-      transactionStatus: e.target.value,
-      id: id,
-      type: "credit",
-      processed_by: null,
-    };
-    console.log("called", statuBody);
-    let response = await Api(
-      `${BASE_URL}/changeOrderStatus`,
-      statuBody,
-      "POST",
-      null
-    );
-    console.log("RESPONSREEEEEEEEE", response);
-    {
-      response.status === 200 &&
-        bgStatusStyleHandler(statuBody.transactionStatus);
-    }
-  }
+  // async function onChangeStatusHandler(e, id) {
+  //   e.preventDefault();
+  //   setOption(e.target.value);
+  //   setStatusLoading(true);
+  //   let statuBody = {
+  //     transactionStatus: e.target.value,
+  //     id: id,
+  //     type: "credit",
+  //     processed_by: null,
+  //   };
+  //   console.log("called", statuBody);
+  //   let responce = await Api(
+  //     `${BASE_URL}/changeOrderStatus`,
+  //     statuBody,
+  //     "POST",
+  //     null
+  //   );
+  //   console.log("RESPONSREEEEEEEEE", responce);
+  //   if (responce.status === 200) {
+  //     // bgStatusStyleHandler(statuBody.transactionStatus);
+  //     setUpdateStatus(statuBody.transactionStatus);
+  //     // setOption(orderTrans);
+  //     // setLoading(false);
+  //     setStatusLoading(false);
+  //   }
+  // }
 
   return (
     <>
@@ -96,7 +95,6 @@ function Orders() {
       ) : (
         <div className="dashboard-content">
           <DashboardHeader btnText="New Order" />
-          {showModal && <Modal />}
 
           <div className="dashboard-content-container">
             <div className="dashboard-content-header">
@@ -126,7 +124,7 @@ function Orders() {
 
                 {orders !== null || orders?.length !== 0 ? (
                   loading ? (
-                    <Overlay className="overlay-center" spinText="Data" />
+                    <Overlay className="overlay-center" loadingText="Data" />
                   ) : (
                     <tbody>
                       {orders?.map((order, index) => (
@@ -142,25 +140,40 @@ function Orders() {
                           </td>
 
                           <td>
-                            <div
-                              className={`${bgStatusStyleHandler(
-                                order.transactionStatus
-                              )} select-option`}
-                            >
-                              <select
-                                value={option ? null : order.transactionStatus}
-                                onChange={(e) =>
-                                  onChangeStatusHandler(e, order.id)
-                                }
-                                className={`select-trans-status`}
+                            <ChangeStatus
+                              orderTrans={order.transactionStatus}
+                              setOption={setOption}
+                              option={option}
+                              orderid={order.id}
+                            />
+
+                            {/* {statusloading ? (
+                              "load"
+                            ) : (
+                              <div
+                                className={`${bgStatusStyleHandler(
+                                  updateStatus !== null
+                                    ? updateStatus
+                                    : order.transactionStatus
+                                )} select-option`}
                               >
-                                <option>Completed</option>
-                                <option>Pending</option>
-                                <option>Cancelled</option>
-                                <option>Shipped</option>
-                                <option>Partially_Completed</option>
-                              </select>
-                            </div>
+                                <select
+                                  value={
+                                    option ? null : order.transactionStatus
+                                  }
+                                  onChange={(e) => {
+                                    onChangeStatusHandler(e, order.id);
+                                  }}
+                                  className={`select-trans-status`}
+                                >
+                                  <option>Pending</option>
+                                  <option>Cancelled</option>
+                                  <option>Shipped</option>
+                                  <option>Completed</option>
+                                  <option>Partially_Completed</option>
+                                </select>
+                              </div>
+                            )} */}
                           </td>
                           <td>
                             <span class="text-style">{order.paid}</span>

@@ -1,5 +1,6 @@
 function bgStatusStyleHandler(status) {
   let styleColor;
+  console.log(status)
   switch (status) {
     case "Completed":
       styleColor = "completed";
@@ -18,6 +19,7 @@ function bgStatusStyleHandler(status) {
       break;
     default:
       styleColor = "rejected";
+      break;
   }
   return styleColor;
 }
