@@ -27,7 +27,7 @@ const cardDetails = [
   },
 ];
 function Orders() {
-  const id = 133;
+  // const id = 133;
   const { data, loading, error } = useFetch(`/resello/api/v1/cms/listOrder`);
   console.log(data);
   const [orders, setOrders] = useState(null);

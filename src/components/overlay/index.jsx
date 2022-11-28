@@ -4,9 +4,9 @@ function index(props) {
   return (
     <>
       <div id="root">
-        <div class="loader-wrapper">
-          <div class="loader"></div>
-          <div class="text">Loading {props.loadingText} Please Wait...</div>
+        <div className="loader-wrapper">
+          <div className={`${props.loader} loader`}></div>
+          <div className="text">{props.loadingText}</div>
         </div>
       </div>
     </>

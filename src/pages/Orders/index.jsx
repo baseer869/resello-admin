@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import _ from "lodash";
 import useFetch from "../../hooks/useFetch";
 import "../styles.css";
 import viewIcon from "../../assets/icons/view.png";
 import { NavLink } from "react-router-dom";
-import { bgStatusStyleHandler } from "../../utils/ChangeOptionBg.js";
-import Api from "../../services";
-import { BASE_URL } from "../../config/config";
-import { Modal } from "../../components/modal/Modal";
 import Overlay from "../../components/overlay/index";
 import ChangeStatus from "../../utils/ChangeStatus";
+// for pagination
+import { Pagination } from "antd";
 
 function Orders() {
   const [spinloading, setSpinLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(page);
-  const [per_page, setPer_Page] = useState(5);
-  const [transStatus, setTransStatus] = useState("Cancelled");
+  const [per_page, setPer_Page] = useState(8);
+  // const [transStatus, setTransStatus] = useState("Cancelled");
   const [sort_Order, setSort_Order] = useState("DESC");
   const [pagination, setPagination] = useState();
-  const [statusloading, setStatusLoading] = useState(false);
 
-  // new useState changes
-  const [updateStatus, setUpdateStatus] = useState(null);
+  // new paginati changes
+  const [total, setTotal] = useState("");
 
+  //
   const { data, loading, reFetch } = useFetch(
     `/resello/api/v1/cms/listOrder?page=${page}&per_page=${per_page}&sort_order=${sort_Order}&sort_by=created_at`
   );
@@ -32,11 +32,14 @@ function Orders() {
   const [orders, setOrders] = useState(null);
   const [option, setOption] = useState(null);
 
+  //
+  console.log(`this is option data from order page${option}`);
   function setDataHandler() {
+    setSpinLoading(true);
     if (data && data.status === 200) {
       setOrders(data?.data.order);
       setPagination(data?.data.pagination);
-      setSpinLoading(false);
+      setTotal(data?.data.pagination.count);
     } else if (data.status === 202) {
       setOrders(null);
     }
@@ -44,54 +47,27 @@ function Orders() {
 
   console.log(`TRhe current page ${currentPage}`);
   useEffect(() => {
-    setSpinLoading(true);
     setDataHandler();
     setCurrentPage(page);
-    setTransStatus(option);
+    setSpinLoading(false);
   }, [orders, option, page, reFetch]);
-  console.log(transStatus);
 
-  // console.log(orders);
-  const pageCount = orders
-    ? Math.ceil(pagination.count / pagination.per_page)
-    : 0;
+  console.log(total);
+  const pageCount = orders ? Math.ceil(total / pagination.per_page) : 0;
+  console.log(pageCount);
   if (pageCount === 0) return null;
   const pages = _.range(1, pageCount + 1);
-  // console.log(pages);
-  // console.log(page);
 
-  // async function onChangeStatusHandler(e, id) {
-  //   e.preventDefault();
-  //   setOption(e.target.value);
-  //   setStatusLoading(true);
-  //   let statuBody = {
-  //     transactionStatus: e.target.value,
-  //     id: id,
-  //     type: "credit",
-  //     processed_by: null,
-  //   };
-  //   console.log("called", statuBody);
-  //   let responce = await Api(
-  //     `${BASE_URL}/changeOrderStatus`,
-  //     statuBody,
-  //     "POST",
-  //     null
-  //   );
-  //   console.log("RESPONSREEEEEEEEE", responce);
-  //   if (responce.status === 200) {
-  //     // bgStatusStyleHandler(statuBody.transactionStatus);
-  //     setUpdateStatus(statuBody.transactionStatus);
-  //     // setOption(orderTrans);
-  //     // setLoading(false);
-  //     setStatusLoading(false);
-  //   }
-  // }
+  const indexOfLastPage = page + per_page;
+  const indexOfFirstPage = indexOfLastPage - per_page;
+  const currentPost = orders.slice(indexOfFirstPage, indexOfLastPage);
 
   return (
     <>
+      <ToastContainer />
       {/* setting loader  */}
       {spinloading ? (
-        <Overlay loadingText="Page" />
+        <Overlay loadingText="Loading Page Please Wait..." />
       ) : (
         <div className="dashboard-content">
           <DashboardHeader btnText="New Order" />
@@ -107,9 +83,11 @@ function Orders() {
                 />
               </div>
             </div>
-
             {loading ? (
-              <Overlay className="overlay-center" loadingText="Data" />
+              <Overlay
+                className="overlay-center"
+                loadingText="Loading Data Please Wait..."
+              />
             ) : (
               <table>
                 <thead>
@@ -146,34 +124,6 @@ function Orders() {
                               option={option}
                               orderid={order.id}
                             />
-
-                            {/* {statusloading ? (
-                              "load"
-                            ) : (
-                              <div
-                                className={`${bgStatusStyleHandler(
-                                  updateStatus !== null
-                                    ? updateStatus
-                                    : order.transactionStatus
-                                )} select-option`}
-                              >
-                                <select
-                                  value={
-                                    option ? null : order.transactionStatus
-                                  }
-                                  onChange={(e) => {
-                                    onChangeStatusHandler(e, order.id);
-                                  }}
-                                  className={`select-trans-status`}
-                                >
-                                  <option>Pending</option>
-                                  <option>Cancelled</option>
-                                  <option>Shipped</option>
-                                  <option>Completed</option>
-                                  <option>Partially_Completed</option>
-                                </select>
-                              </div>
-                            )} */}
                           </td>
                           <td>
                             <span class="text-style">{order.paid}</span>
@@ -201,65 +151,14 @@ function Orders() {
                 ) : null}
               </table>
             )}
-
-            <span className="pagination">
-              <ul className="pagination-sec">
-                <li onClick={() => setPage(currentPage - 1)}>
-                  <a href="#!" className="">
-                    Prev
-                  </a>
-                </li>
-                {pages?.map((page, index) => {
-                  return (
-                    <li
-                      key={index}
-                      className={page === currentPage ? "active" : ""}
-                      onClick={() => setPage(page)}
-                    >
-                      <a href="#!" key={index} className="">
-                        {page}
-                      </a>
-                    </li>
-                  );
-                })}
-                <li onClick={() => setPage(currentPage + 1)}>
-                  <a href="#!" className="">
-                    Next
-                  </a>
-                </li>
-              </ul>
-            </span>
-
-            {/* <span className="pagination">
-          <ul className="pagination-sec">
-            <li>
-              <a href="#!" className="">
-                Prev
-              </a>
-            </li>
-            {pages.map((page) => {
-              return (
-                <li
-                  onClick={() => pagination(page)}
-                  className={
-                    page === currentPage
-                      ? "pagination-list active"
-                      : "pagination-list"
-                  }
-                >
-                  <a href="#!" className="">
-                    {page}
-                  </a>
-                </li>
-              );
-            })}
-            <li>
-              <a href="#!" className="">
-                Next
-              </a>
-            </li>
-          </ul>
-        </span> */}
+            <div className="paginations">
+              <Pagination
+                pageSize={per_page}
+                total={total}
+                current={page}
+                onChange={(value) => setPage(value)}
+              />
+            </div>
           </div>
         </div>
       )}

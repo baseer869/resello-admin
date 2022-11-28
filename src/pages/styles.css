@@ -239,6 +239,11 @@ td span {
     border: none;
 }
 
+.completed-color {
+    color: #fff;
+
+}
+
 .select-trans-status>option {
     width: 9rem;
 
@@ -401,6 +406,12 @@ td span {
 }
 
 .overlay-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paginations {
     display: flex;
     align-items: center;
     justify-content: center;

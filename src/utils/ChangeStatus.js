@@ -2,21 +2,29 @@ import React, { useState } from 'react'
 import Api from "../services/index";
 import { BASE_URL } from "../config/config";
 import { bgStatusStyleHandler } from "../utils/ChangeOptionBg"
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function ChangeStatus(props) {
 
     const [loading, setLoading] = useState(false)
-    const [updateStatus, setUpdateStatus] = useState(null)
+    const [option, setOption] = useState(props.option);
 
-    console.log(updateStatus) //
-    console.log(props.orderTrans)//
+    // console.log(`updated status ===> ${updateStatus}`) 
+    console.log(` props data from page ${props.orderTrans}`)//
 
 
+    // for toast 
+    const showToastMessage = () => {
+        console.log(`this is toast`)
+        toast.success("Status Updated SuccessFully...", {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
 
-    async function onChangeStatusHandler(e, id) {
+    const onChangeStatusHandler = async (e, id) => {
         e.preventDefault();
         setLoading(true)
-        props.setOption(e.target.value)
-        console.log(e.target.value)
+        // setOption(e.target.value)
         let statuBody = {
             transactionStatus: e.target.value,
             id: id,
@@ -32,30 +40,38 @@ function ChangeStatus(props) {
         );
         console.log("RESPONSREEEEEEEEE", responce);
         if (responce.status === 200) {
-            bgStatusStyleHandler(statuBody.transactionStatus)
-            setUpdateStatus(statuBody.transactionStatus)
+
+            setLoading(false)
+            setOption(statuBody.transactionStatus);
+            showToastMessage()
+        }
+        if (responce.status === 404) {
             setLoading(false)
         }
+
     }
+
+
+
 
     return (
 
         <>
             {
-                loading ? "load" :
+                loading ? <div className='loaderWrapper'><div className="dataloader" ></div></div> :
                     (<div
                         className={`${bgStatusStyleHandler(
-                            updateStatus !== null ? updateStatus : props.orderTrans
+                            option !== null ? option : props.orderTrans
                         )} select-option`}
                     >
-                        <select
+                        <select disabled={props.orderTrans === "Completed" ? true : false}
                             value={
-                                props.option ? null : props.orderTrans
+                                option !== null ? option : props.orderTrans
                             }
                             onChange={(e) =>
                                 onChangeStatusHandler(e, props.orderid)
                             }
-                            className={`select-trans-status`}
+                            className={`${props.orderTrans === "Completed" ? "completed-color" : ""} select-trans-status`}
                         >
                             <option>Pending</option>
                             <option>Cancelled</option>
